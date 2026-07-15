@@ -1,3 +1,5 @@
+6 Implementation of Lagrange multiplier method  
+
 from sympy import symbols, diff, solve
 
 # Maximization example: f = x+y s.t. x^2+y^2=1
