@@ -1,0 +1,21 @@
+def f(x):
+    return x**2 - 2
+
+def f_prime(x):
+    return 2 * x
+
+def newton_method(x0, tol=1e-6, max_iter=100):
+    x = x0
+    for i in range(max_iter):
+        fx, fpx = f(x), f_prime(x)
+        if fpx == 0:
+            raise ValueError("Zero derivative. No solution found.")
+        x_new = x - fx / fpx
+        print(f"Iteration {i+1}: x = {x_new:.6f}")
+        if abs(x_new - x) < tol:
+            return x_new
+        x = x_new
+    raise ValueError("Did not converge")
+
+root = newton_method(1.0)
+print(f"\nApproximate root: {root:.6f}")
