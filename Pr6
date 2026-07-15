@@ -1,0 +1,21 @@
+from sympy import symbols, diff, solve
+
+# Maximization example: f = x+y s.t. x^2+y^2=1
+x, y, lam = symbols('x y lambda')
+f = x + y
+g = x**2 + y**2 - 1
+L = f - lam * g
+solutions = solve([diff(L, x), diff(L, y), diff(L, lam)], (x, y, lam), dict=True)
+for sol in solutions:
+    x_val, y_val = sol[x].evalf(), sol[y].evalf()
+    print(f"Optimal Point: x = {x_val}, y = {y_val}, f(x, y) = {f.subs({x: x_val, y: y_val}).evalf()}")
+
+# Minimization example: f = x^2+y^2 s.t. x+y=1
+import sympy as sp
+x, y, lam = sp.symbols('x y lam')
+f = x**2 + y**2
+g = x + y - 1
+L = f - lam * g
+sol = sp.solve([sp.diff(L, x), sp.diff(L, y), sp.diff(L, lam)], (x, y, lam), dict=True)
+for s in sol:
+    print(f"Optimal x: {s[x]}, y: {s[y]}, Minimum f(x,y): {f.subs({x: s[x], y: s[y]})}")
