@@ -1,3 +1,7 @@
+
+Implementation of Karush-Kuhn-Tucker 
+(KKT) Theorem 
+
 import numpy as np
 from scipy.optimize import minimize
 
