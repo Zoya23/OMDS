@@ -1,0 +1,50 @@
+Flower Pollination Algorithm 
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+
+def sphere(x):
+    return np.sum(x**2)
+
+def levy_flight(beta, dim):
+    sigma = (math.gamma(1 + beta) * np.sin(np.pi * beta / 2) /
+             (math.gamma((1 + beta) / 2) * beta * 2 ** ((beta - 1) / 2))) ** (1 / beta)
+    u = np.random.randn(dim) * sigma
+    v = np.random.randn(dim)
+    return u / abs(v) ** (1 / beta)
+
+def flower_pollination(n=25, dim=2, max_iter=100, p=0.8, bounds=(-10, 10)):
+    population = np.random.uniform(bounds[0], bounds[1], (n, dim))
+    fitness = np.array([sphere(x) for x in population])
+    best = population[np.argmin(fitness)].copy()
+    best_score = np.min(fitness)
+
+    for t in range(max_iter):
+        for i in range(n):
+            if np.random.rand() < p:
+                L = levy_flight(beta=1.5, dim=dim)
+                population[i] += L * (best - population[i])
+            else:
+                j, k = np.random.randint(0, n, 2)
+                epsilon = np.random.rand()
+                population[i] += epsilon * (population[j] - population[k])
+            population[i] = np.clip(population[i], bounds[0], bounds[1])
+            f = sphere(population[i])
+            if f < fitness[i]:
+                fitness[i] = f
+                if f < best_score:
+                    best = population[i].copy()
+                    best_score = f
+    return best, best_score, population
+
+if __name__ == "__main__":
+    best, score, pop = flower_pollination()
+    print(f"Best solution: {best}\nFitness: {score}")
+
+    plt.figure(figsize=(6, 5))
+    plt.scatter(pop[:, 0], pop[:, 1], alpha=0.6, label='Flowers')
+    plt.scatter(best[0], best[1], marker='*', s=200, label='Global Best')
+    plt.title("Final Flower Positions (FPA)"); plt.xlabel("x[0]"); plt.ylabel("x[1]")
+    plt.grid(True); plt.legend(); plt.show()
