@@ -1,0 +1,46 @@
+def simplex(c, A, b):
+    from fractions import Fraction
+    c = [Fraction(x) for x in c]
+    A = [[Fraction(x) for x in row] for row in A]
+    b = [Fraction(x) for x in b]
+    m = len(A)
+    n = len(c)
+    tableau = []
+    for i in range(m):
+        row = A[i] + [Fraction(int(i == j)) for j in range(m)] + [b[i]]
+        tableau.append(row)
+    tableau.append([-ci for ci in c] + [Fraction(0)] * (m + 1))  # negate c for maximization
+
+    while True:
+        last_row = tableau[-1]
+        pivot_col = min(range(len(last_row) - 1), key=lambda j: last_row[j])
+        if last_row[pivot_col] >= 0:
+            break
+        ratios = []
+        for i in range(m):
+            if tableau[i][pivot_col] > 0:
+                ratios.append((tableau[i][-1] / tableau[i][pivot_col], i))
+        if not ratios:
+            raise Exception("Unbounded solution.")
+        pivot_row = min(ratios)[1]
+        pivot_val = tableau[pivot_row][pivot_col]
+        tableau[pivot_row] = [x / pivot_val for x in tableau[pivot_row]]
+        for i in range(len(tableau)):
+            if i != pivot_row:
+                ratio = tableau[i][pivot_col]
+                tableau[i] = [x - ratio * y for x, y in zip(tableau[i], tableau[pivot_row])]
+
+    solution = [0] * n
+    for j in range(n):
+        col = [tableau[i][j] for i in range(m)]
+        if col.count(1) == 1 and col.count(0) == m - 1:
+            solution[j] = float(tableau[col.index(1)][-1])
+    return solution, float(tableau[-1][-1])
+
+# Maximize z = 3x + 2y  s.t. 2x+y<=18, x+2y<=14, x-y<=3
+c = [3, 2]
+A = [[2, 1], [1, 2], [1, -1]]
+b = [18, 14, 3]
+solution, value = simplex(c, A, b)
+print("Optimal solution:", solution)
+print("Optimal value:", value)
