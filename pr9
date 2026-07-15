@@ -1,0 +1,52 @@
+article Swarm Optimization Algorithm 
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def sphere(x):
+    return np.sum(x**2)
+
+class Particle:
+    def __init__(self, dim, bounds):
+        self.position = np.random.uniform(bounds[0], bounds[1], dim)
+        self.velocity = np.random.uniform(-1, 1, dim)
+        self.best_position = self.position.copy()
+        self.best_score = float('inf')
+
+    def update_velocity(self, global_best, w, c1, c2):
+        r1, r2 = np.random.rand(2)
+        cognitive = c1 * r1 * (self.best_position - self.position)
+        social = c2 * r2 * (global_best - self.position)
+        self.velocity = w * self.velocity + cognitive + social
+
+    def update_position(self, bounds):
+        self.position += self.velocity
+        self.position = np.clip(self.position, bounds[0], bounds[1])
+
+def pso(objective, dim, bounds, num_particles, max_iter, w=0.5, c1=1.5, c2=1.5):
+    swarm = [Particle(dim, bounds) for _ in range(num_particles)]
+    global_best_position = np.random.uniform(bounds[0], bounds[1], dim)
+    global_best_score = float('inf')
+    for _ in range(max_iter):
+        for particle in swarm:
+            fitness = objective(particle.position)
+            if fitness < particle.best_score:
+                particle.best_score = fitness
+                particle.best_position = particle.position.copy()
+            if fitness < global_best_score:
+                global_best_score = fitness
+                global_best_position = particle.position.copy()
+        for particle in swarm:
+            particle.update_velocity(global_best_position, w, c1, c2)
+            particle.update_position(bounds)
+    return global_best_position, global_best_score
+
+if __name__ == "__main__":
+    best_pos, best_score = pso(sphere, dim=5, bounds=(-10, 10), num_particles=30, max_iter=100)
+    print(f"Best position: {best_pos}\nBest score: {best_score}")
+
+    best_pos, best_score = pso(sphere, dim=2, bounds=(-10, 10), num_particles=30, max_iter=100)
+    plt.figure(figsize=(6, 5))
+    plt.scatter(best_pos[0], best_pos[1], marker='*', s=200)
+    plt.title("PSO Best Solution"); plt.xlabel("x"); plt.ylabel("y"); plt.grid(True)
+    plt.show()
