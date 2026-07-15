@@ -1,0 +1,23 @@
+import numpy as np
+from scipy.optimize import minimize
+
+# Example 1: min x^2+y^2 s.t. x+y=1, x>=0, y>=0
+def objective1(x): return x[0]**2 + x[1]**2
+def eq_constraint(x): return x[0] + x[1] - 1
+constraints1 = [
+    {'type': 'eq', 'fun': eq_constraint},
+    {'type': 'ineq', 'fun': lambda x: x[0]},
+    {'type': 'ineq', 'fun': lambda x: x[1]}
+]
+result1 = minimize(objective1, [0.5, 0.5], method='SLSQP', constraints=constraints1)
+print("Optimal solution:", result1.x, "| value:", result1.fun, "| success:", result1.success)
+
+# Example 2: min x^2+y^2 s.t. x+y>=2, x>=0, y>=0
+def objective2(x): return x[0]**2 + x[1]**2
+constraints2 = [
+    {'type': 'ineq', 'fun': lambda x: x[0] + x[1] - 2},
+    {'type': 'ineq', 'fun': lambda x: x[0]},
+    {'type': 'ineq', 'fun': lambda x: x[1]}
+]
+result2 = minimize(objective2, [0.1, 2], method='SLSQP', constraints=constraints2)
+print("Optimal solution:", result2.x, "| value:", result2.fun, "| success:", result2.success)
