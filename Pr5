@@ -1,0 +1,17 @@
+def f(x):
+    return x**2 - 2
+
+def secant_method(x0, x1, tol=1e-6, max_iter=100):
+    for i in range(max_iter):
+        fx0, fx1 = f(x0), f(x1)
+        if (fx1 - fx0) == 0:
+            raise ValueError("Division by zero. No solution found.")
+        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
+        print(f"Iteration {i+1}: x = {x2:.6f}")
+        if abs(x2 - x1) < tol:
+            return x2
+        x0, x1 = x1, x2
+    raise ValueError("Did not converge")
+
+root = secant_method(1.0, 2.0)
+print(f"\nApproximate root: {root:.6f}")
