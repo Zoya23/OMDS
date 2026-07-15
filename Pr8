@@ -1,0 +1,14 @@
+ BFGS Method
+
+from scipy.optimize import minimize
+
+# Minimization
+def objective(x): return (x[0] - 2)**2 + (x[1] - 3)**2
+result = minimize(objective, [0, 0], method='BFGS')
+print("Optimal solution:", result.x, "| value:", result.fun, "| iterations:", result.nit)
+
+# Maximization (minimize the negative)
+def f(x): return -(x[0] - 1)**2 - 2*(x[1] - 2)**2 + 10
+def neg_f(x): return -f(x)
+result = minimize(neg_f, [0, 0], method='BFGS')
+print("Optimal solution:", result.x, "| Maximum value:", f(result.x), "| iterations:", result.nit)
